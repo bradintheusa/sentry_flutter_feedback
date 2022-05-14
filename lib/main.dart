@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:feedback_sentry/feedback_sentry.dart';
 
 // this will need to be async.
 void main() async {
@@ -9,7 +10,8 @@ void main() async {
           'https://813c028c4b4741bcbd0830c06182d7b0@o169585.ingest.sentry.io/3260779';
     },
     // Init your App.
-    appRunner: () => runApp(const MyApp()),
+    appRunner: () => runApp(const  BetterFeedback(
+      child: MyApp())),
   );
 }
 
@@ -46,7 +48,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
       Sentry.captureMessage("Increment Stored:" + _counter.toString());
-      
     });
   }
 
@@ -58,7 +59,16 @@ class _MyHomePageState extends State<MyHomePage> {
       'channel': 'Alpha',
       'server': 'dev',
     };
-    Sentry.configureScope((scope) => scope.setContexts('environment', additionalData));    
+    Sentry.configureScope(
+        (scope) => scope.setContexts('environment', additionalData));
+  }
+
+  _feedback() {
+    _incrementCounter();
+    BetterFeedback.of(context).showAndUploadToSentry(
+      name: 'Flutter Demo App', // optional
+      email: 'foo_bar@example.com', // optional
+    );
   }
 
   @override
@@ -82,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _feedback,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
